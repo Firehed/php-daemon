@@ -145,6 +145,7 @@ class Daemon {
 			sleep(1);
 		}
 		self::ok();
+		unlink($this->pidfile);
 	}
 
 	private function stop() {
