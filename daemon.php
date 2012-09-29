@@ -1,7 +1,6 @@
 <?php
 error_reporting(-1);
 ini_set('display_errors', true);
-
 class Daemon {
 
 	private $pidfile;
@@ -158,7 +157,7 @@ class Daemon {
 	}
 	private function status() {
 		$pid = $this->getChildPid();
-		if ($pid  && posix_kill($pid, 0)) {
+		if ($pid && posix_kill($pid, 0)) {
 			echo "Process is running.\n";
 		}
 		else {
