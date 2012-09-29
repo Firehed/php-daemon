@@ -74,10 +74,9 @@ class Daemon {
 			self::crash("Could not get pidfile lock, another process is probably running");
 		}
 
-		// fork
-		$this->debug("About to fork()");
+		// Fork
+		$this->debug("About to fork");
 		$pid = pcntl_fork();
-		$this->debug("Forked!");
 		switch ($pid) {
 			case -1: // fork failed
 				self::crash("Could not fork");
@@ -85,11 +84,11 @@ class Daemon {
 
 			case 0: // i'm the child
 				$this->childPid = getmypid();
-				$this->debug("Child process ($this->childPid)");
+				$this->debug("Forked - child process ($this->childPid)");
 			break;
 
 			default: // i'm the parent
-				$this->debug("Parent process ($pid)");
+				$this->debug("Forked - parent process ($pid)");
 				fseek($this->fh, 0);
 				ftruncate($this->fh, 0);
 				fwrite($this->fh, $pid);
@@ -105,48 +104,37 @@ class Daemon {
 
 		self::ok();
 		// stdin/etc reset
+		$this->debug("Resetting file descriptors");
 		fclose(STDIN);
 		fclose(STDOUT);
 		fclose(STDERR);
 		$this->stdin  = fopen('/dev/null', 'r');
 		$this->stdout = fopen('log', 'a+');
 		$this->stderr = fopen('log.err', 'a+');
-		$this->debug("Reopened handles");
+		$this->debug("Reopened file descriptors");
 
 		// var_dump($this);
 		// install signal handlers
-		declare(ticks=1);
-		pcntl_signal(SIGTERM, array($this, 'signalhandler'));
+		// declare(ticks=1);
+		// pcntl_signal(SIGTERM, array($this, 'signalhandler'));
 		// echo "set sigterm handler\n";
 		// print_r(debug_backtrace());
 		$this->debug("Executing original script");
 		include $this->script;
 	}
 
-	private function signalhandler($sig) {
-		echo "Got sig $sig\n";
-		// var_dump($sig);
-	// 	switch ($sig) {
-	// 		case SIGTERM:
-	// 			fclose($this->fh);
-	// 			unlink($this->pidfile);
-	// 			
-	// 			exit;
-	// 		break;
-	// 
-	// 		default:
-	// 		break;
-	// 	}
-	}
-
-	private static function terminate($pid, $signal) {
+	private function terminate($msg, $signal) {
+		self::show($msg);
+		$pid = file_get_contents($this->pidfile);
 		if (!posix_kill($pid, $signal)) {
-			self::crash("Process $pid not running!");
+			self::failed();
+			echo "Process $pid not running!\n";
+			return;
 		}
 		$i = 0;
 		while (posix_kill($pid, 0)) { // Wait until the child goes away
-			if ($i++ >= 15) {
-				self::crash("Could not terminate process");
+			if ($i++ >= 20) {
+				self::crash("Process $pid did not terminate after $i seconds");
 			}
 			self::show('.');
 			sleep(1);
@@ -155,35 +143,31 @@ class Daemon {
 	}
 
 	private function stop() {
-		$pid = file_get_contents($this->pidfile);
-		self::show("Stopping ");
-		self::terminate($pid, SIGTERM);
+		$this->terminate('Stopping', SIGTERM);
 	}
-	function restart() {
+	private function restart() {
 		$this->stop();
 		$this->start();
 	}
 	function reload() {
 		// posix_kill(SIGUSR1)
-		self::crash(2);
+		self::crash("Feature not built yet!");
 	}
 	function status() {
 		// posix_kill(pid,0) ensure rinning
 		// "Running, PID:", "Stopped"
-		self::crash(2);
+		self::crash("Feature not built yet!");
 	}
 	function kill() {
-		$pid = file_get_contents($this->pidfile);
-		self::show("Sending SIGKILL ");
-		self::terminate($pid, SIGKILL);
+		$this->terminate('Sending SIGKILL', SIGKILL);
 	}
 	private function getChildPid() {
-		
+		return file_exists($this->pidfile) ? file_get_contents($this->pidfile) : false;
 	}
 
+	// make output pretty
 	private static $chars = 0;
 	static function show($text) {
-		// printf("%-59s", $text);
 		echo $text;
 		self::$chars += strlen($text);
 	}
@@ -197,7 +181,6 @@ class Daemon {
 		echo "[\033[0;31mFAILED\033[0m]\n";
 		self::$chars = 0;
 	}
-
 
 }
 
