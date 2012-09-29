@@ -3,15 +3,8 @@
 error_reporting(-1);
 ini_set('display_errors', true);
 
-if (!function_exists('pcntl_fork')) {
-	die("PCNTL extension required");
-}
-if (!function_exists('posix_setsid')) {
-	die("POSIX extension required");
-}
-
 class Daemon {
-	
+
 	private $pidfile;
 	private $fh;
 	private $childPid;
@@ -45,6 +38,13 @@ class Daemon {
 	}
 
 	private function __construct($script) {
+		if (!function_exists('pcntl_fork')) {
+			die("PCNTL extension required");
+		}
+		if (!function_exists('posix_setsid')) {
+			die("POSIX extension required");
+		}
+
 		// parse options
 		$this->pidfile = 'pid';
 		$this->script = $script;
@@ -185,25 +185,3 @@ class Daemon {
 }
 
 Daemon::run('test.php');
-
-// 
-// echo "Starting\n";
-// daemon_start();
-// echo "Started\n";
-// 
-// 
-// function sig($i) {
-// 	global $fh, $pidfile;
-// 	echo "Caught signal $i";
-// 	// fwrite(STDERR, "ERROR $i\n");
-// 	echo $b;
-// 	switch ($i) {
-// 		case SIGTERM:
-// 			fclose($fh);
-// 			unlink($pidfile);
-// 		break;
-// 	}
-// 	exit;
-// }
-// // var_dump(SIG_IGN);
-// // $log = fopen('log', 'a+');
