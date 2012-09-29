@@ -127,7 +127,7 @@ class Daemon {
 		}
 		$i = 0;
 		while (posix_kill($pid, 0)) { // Wait until the child goes away
-			if ($i++ >= 20) {
+			if (++$i >= 20) {
 				self::crash("Process $pid did not terminate after $i seconds");
 			}
 			self::show('.');
