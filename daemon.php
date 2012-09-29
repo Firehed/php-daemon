@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 error_reporting(-1);
 ini_set('display_errors', true);
@@ -32,8 +33,10 @@ class Daemon {
 
 	private static function showHelp() {
 		$cmd = $_SERVER['_'];
-		$self = $_SERVER['PHP_SELF'];
-		echo "Usage: $cmd $self {status|start|stop|restart|reload|kill}\n";
+		if ($cmd != $_SERVER['PHP_SELF']) {
+			$cmd .= ' ' . $_SERVER['PHP_SELF'];
+		}
+		echo "Usage: $cmd {status|start|stop|restart|reload|kill}\n";
 		exit(0);
 	}
 
