@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 error_reporting(-1);
 ini_set('display_errors', true);
@@ -8,14 +7,13 @@ class Daemon {
 	private $pidfile;
 	private $fh;
 	private $childPid;
-	private $script;
 	private static $instance;
 
-	public static function run($file) {
+	public static function run() {
 		if (self::$instance) {
 			self::crash("Singletons only, please");
 		}
-		self::$instance = new self($file);
+		self::$instance = new self;
 	}
 
 	private static function crash($msg) {
@@ -37,7 +35,7 @@ class Daemon {
 		// echo $msg,"\n";
 	}
 
-	private function __construct($script) {
+	private function __construct() {
 		if (!function_exists('pcntl_fork')) {
 			die("PCNTL extension required");
 		}
@@ -47,7 +45,6 @@ class Daemon {
 
 		// parse options
 		$this->pidfile = 'pid';
-		$this->script = $script;
 		if ($_SERVER['argc'] < 2) {
 			self::showHelp();
 		}
@@ -112,15 +109,7 @@ class Daemon {
 		$this->stdout = fopen('log', 'a+');
 		$this->stderr = fopen('log.err', 'a+');
 		$this->debug("Reopened file descriptors");
-
-		// var_dump($this);
-		// install signal handlers
-		// declare(ticks=1);
-		// pcntl_signal(SIGTERM, array($this, 'signalhandler'));
-		// echo "set sigterm handler\n";
-		// print_r(debug_backtrace());
 		$this->debug("Executing original script");
-		include $this->script;
 	}
 
 	private function terminate($msg, $signal) {
@@ -148,24 +137,26 @@ class Daemon {
 		unlink($this->pidfile);
 	}
 
-	private function stop() {
+	private function stop($exit = true) {
 		$this->terminate('Stopping', SIGTERM);
+		$exit && exit;
 	}
 	private function restart() {
-		$this->stop();
+		$this->stop(false);
 		$this->start();
 	}
-	function reload() {
+	private function reload() {
 		// posix_kill(SIGUSR1)
 		self::crash("Feature not built yet!");
 	}
-	function status() {
+	private function status() {
 		// posix_kill(pid,0) ensure rinning
 		// "Running, PID:", "Stopped"
 		self::crash("Feature not built yet!");
 	}
 	function kill() {
 		$this->terminate('Sending SIGKILL', SIGKILL);
+		exit;
 	}
 	private function getChildPid() {
 		return file_exists($this->pidfile) ? file_get_contents($this->pidfile) : false;
@@ -189,5 +180,3 @@ class Daemon {
 	}
 
 }
-
-Daemon::run('test.php');
