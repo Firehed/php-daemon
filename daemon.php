@@ -146,8 +146,15 @@ class Daemon {
 		$this->start();
 	}
 	private function reload() {
-		// posix_kill(SIGUSR1)
-		self::crash("Feature not built yet!");
+		$pid = $this->getChildPid();
+		self::show("Sending SIGUSR1");
+		if ($pid && posix_kill($pid, SIGUSR1)) {
+			self::ok();
+		}
+		else {
+			self::failed();
+		}
+		exit;
 	}
 	private function status() {
 		$pid = $this->getChildPid();
