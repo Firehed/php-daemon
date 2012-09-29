@@ -150,9 +150,14 @@ class Daemon {
 		self::crash("Feature not built yet!");
 	}
 	private function status() {
-		// posix_kill(pid,0) ensure rinning
-		// "Running, PID:", "Stopped"
-		self::crash("Feature not built yet!");
+		$pid = $this->getChildPid();
+		if ($pid  && posix_kill($pid, 0)) {
+			echo "Process is running.\n";
+		}
+		else {
+			echo "Process not found.\n";
+		}
+		exit;
 	}
 	function kill() {
 		$this->terminate('Sending SIGKILL', SIGKILL);
