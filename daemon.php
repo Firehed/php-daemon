@@ -125,7 +125,12 @@ class Daemon {
 
 	private function terminate($msg, $signal) {
 		self::show($msg);
-		$pid = file_get_contents($this->pidfile);
+		$pid = $this->getChildPid();
+		if (false === $pid) {
+			self::failed();
+			echo "No PID file found\n";
+			return;
+		}
 		if (!posix_kill($pid, $signal)) {
 			self::failed();
 			echo "Process $pid not running!\n";
