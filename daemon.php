@@ -157,13 +157,23 @@ class Daemon {
 	}
 	private function status() {
 		$pid = $this->getChildPid();
-		if ($pid && posix_kill($pid, 0)) {
-			echo "Process is running.\n";
-		}
-		else {
+		if (!$pid) {
 			echo "Process not found.\n";
+			exit(3);
 		}
-		exit;
+		if (posix_kill($pid, 0)) {
+			echo "Process (pid $pid) is running.\n";
+			exit(0);
+		}
+		// # See if /var/lock/subsys/${base} exists
+		// if [ -f /var/lock/subsys/${base} ]; then
+		// 	echo $"${base} dead but subsys locked"
+		// 	return 2
+		// fi¬
+		else {
+			echo "Process dead but pid file exists\n";
+			exit(1);
+		}
 	}
 	function kill() {
 		$this->terminate('Sending SIGKILL', SIGKILL);
