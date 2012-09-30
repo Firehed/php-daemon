@@ -2,9 +2,9 @@
 A really useful tool with a very boring name. Daemonize your PHP scripts with two lines of code.
 
 ## Requirements
-`posix` and `pcntl` extensions
-PHP5 (Written and tested in 5.3, but any version >=5.0.0 should work)
-Basic knowledge of PHP on the command line
+* `posix` and `pcntl` extensions
+* PHP5 (Written and tested in 5.3, but any version >=5.0.0 should work)
+* Basic knowledge of PHP on the command line
 
 ## Usage
 Code:
