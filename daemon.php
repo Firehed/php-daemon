@@ -158,11 +158,11 @@ class Daemon {
 	private function status() {
 		$pid = $this->getChildPid();
 		if (!$pid) {
-			echo "Process not found.\n";
+			echo "Process is stopped\n";
 			exit(3);
 		}
 		if (posix_kill($pid, 0)) {
-			echo "Process (pid $pid) is running.\n";
+			echo "Process (pid $pid) is running...\n";
 			exit(0);
 		}
 		// # See if /var/lock/subsys/${base} exists
