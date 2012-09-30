@@ -21,16 +21,15 @@ CLI:
 Yes, it's that simple.
 
 ### Actions
-Status: Check the status of the process. Returns:
-	0 if running
-	1 if dead but pidfile is hanging around
-	3 if stopped
-Start: Start the daemon
-Stop: Stop the daemon gracefully via SIGTERM
-Restart: Stop (if running) and start
-Reload: Send SIGUSR1 to daemon (you need to implement a reload function, see below)
-Kill: Kill the daemon via SIGKILL (kill -9)
-
+* Status: Check the status of the process. Returns:
+	* 0 if running
+	* 1 if dead but pidfile is hanging around
+	* 3 if stopped
+* Start: Start the daemon
+* Stop: Stop the daemon gracefully via SIGTERM
+* Restart: Stop (if running) and start
+* Reload: Send SIGUSR1 to daemon (you need to implement a reload function, see below)
+* Kill: Kill the daemon via SIGKILL (kill -9)
 
 ## Options
 None yet. I intend to add configuration for:
