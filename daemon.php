@@ -109,6 +109,7 @@ class Daemon {
 		$this->stderr = fopen('log.err', 'a+');
 		$this->debug("Reopened file descriptors");
 		$this->debug("Executing original script");
+		pcntl_signal(SIGTERM, function() { exit; });
 	}
 
 	private function terminate($msg, $signal) {
