@@ -36,10 +36,10 @@ class Daemon {
 
 	private function __construct() {
 		if (!function_exists('pcntl_fork')) {
-			die("PCNTL extension required");
+			die("PCNTL extension required\n");
 		}
 		if (!function_exists('posix_setsid')) {
-			die("POSIX extension required");
+			die("POSIX extension required\n");
 		}
 
 		// parse options
