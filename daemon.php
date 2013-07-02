@@ -84,7 +84,8 @@ class Daemon {
 			break;
 
 			default: // i'm the parent
-				$this->debug("Forked - parent process ($pid)");
+				$me = getmypid();
+				$this->debug("Forked - parent process ($me -> $pid)");
 				fseek($this->fh, 0);
 				ftruncate($this->fh, 0);
 				fwrite($this->fh, $pid);
