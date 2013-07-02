@@ -135,7 +135,12 @@ class Daemon {
 			sleep(1);
 		}
 		self::ok();
-		unlink($this->pidfile);
+	}
+
+	public function __destruct() {
+		if ($this->childPid) {
+			unlink($this->pidfile);
+		}
 	}
 
 	private function stop($exit = true) {
