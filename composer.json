@@ -1,0 +1,6 @@
+{
+	"name": "firehed/daemon",
+	"description": "Turn a command-line script into a daemonized process",
+	"license": "MIT"
+}
+
