@@ -138,7 +138,7 @@ class Daemon {
 	}
 
 	public function __destruct() {
-		if ($this->childPid) {
+		if (getmypid() == $this->childPid) {
 			unlink($this->pidfile);
 		}
 	}
