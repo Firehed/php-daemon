@@ -2,7 +2,7 @@
 ,	"description": "Turn a command-line script into a daemonized process"
 ,	"license": "MIT"
 ,	"autoload":
-	{ "psr-0": {"Firehed": "src/"}
+	{ "psr-0": {"Firehed\\ProcessControl\\Daemon": "src/"}
 	}
 ,	"require":
 	{ "php": ">=5.3.0"
