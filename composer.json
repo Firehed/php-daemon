@@ -1,9 +1,13 @@
-{
-	"name": "firehed/daemon",
-	"description": "Turn a command-line script into a daemonized process",
-	"license": "MIT",
-	"autoload": {
-		"psr-0": {"Firehed": "src/"}
+{ "name": "firehed/daemon"
+,	"description": "Turn a command-line script into a daemonized process"
+,	"license": "MIT"
+,	"autoload":
+	{ "psr-0": {"Firehed": "src/"}
+	}
+,	"require":
+	{ "php": ">=5.3.0"
+	, "ext-posix": "*"
+	, "ext-pcntl": "*"
 	}
 }
 
