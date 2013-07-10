@@ -10,8 +10,11 @@ A really useful tool with a very boring name. Daemonize your PHP scripts with tw
 Code:
 
 	<?php
-	include 'path/to/daemon.php';
-	Daemon::run();
+	// Preferred:
+	require 'vendor/autoload.php'; // composer
+	// Alternately:
+	// include 'path/to/daemon.php';
+	Firehed\ProcessControl\Daemon::run();
 	// The rest of your original script
 
 CLI:
