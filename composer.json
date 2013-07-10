@@ -1,6 +1,9 @@
 {
 	"name": "firehed/daemon",
 	"description": "Turn a command-line script into a daemonized process",
-	"license": "MIT"
+	"license": "MIT",
+	"autoload": {
+		"psr-0": {"Firehed": "src/"}
+	}
 }
 
