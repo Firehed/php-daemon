@@ -93,8 +93,30 @@ class Daemon
         if ($cmd != $_SERVER['PHP_SELF']) {
             $cmd .= ' ' . $_SERVER['PHP_SELF'];
         }
-        echo "Usage: $cmd {status|start|stop|restart|reload|kill}\n";
+        echo "\033[0;35mUsage:\033[0m " . $cmd . " " . self::listCommands() . "\n";
         exit(0);
+    }
+
+    /**
+     * List possible commands
+     *
+     * @return string
+     */
+    private static function listCommands()
+    {
+        $commands = array(
+            'status',
+            'start',
+            'stop',
+            'restart',
+            'reload',
+            'kill'
+        );
+        $list = array();
+        foreach ($commands as $command) {
+            $list[] = "\033[0;36m" . $command . "\033[0m";
+        }
+        return "{" . substr(implode('|', $list), 0, - 1) . "\033[0;32m}";
     }
 
     /**
