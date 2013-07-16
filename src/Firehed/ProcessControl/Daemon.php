@@ -21,6 +21,13 @@ class Daemon
 {
 
     /**
+     * Are we running in debug mode?
+     *
+     * @var boolean
+     */
+    private static $debugMode = false;
+
+    /**
      * Path to the process identification number file (pid)
      *
      * @var string
@@ -66,6 +73,20 @@ class Daemon
             self::crash("Singletons only, please");
         }
         self::$instance = new self();
+    }
+
+    /**
+     * Enable or disable debug mode
+     *
+     * @param string $enabled            
+     *
+     * @return void
+     */
+    public static function setDebugMode($enabled = true)
+    {
+        if (is_bool($enabled)) {
+            self::$debugMode = $enabled;
+        }
     }
 
     /**
@@ -127,7 +148,9 @@ class Daemon
      */
     private function debug($msg)
     {
-        // echo $msg,"\n";
+        if (self::$debugMode) {
+            echo $msg, "\n";
+        }
     }
 
     /**
