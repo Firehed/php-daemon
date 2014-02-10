@@ -9,13 +9,6 @@ class Daemon {
 	private $childPid;
 	private static $instance;
 
-	public static function run() {
-		if (self::$instance) {
-			self::crash("Singletons only, please");
-		}
-		self::$instance = new self;
-	}
-
 	private static function crash($msg) {
 		// Encapsulate in case we want to throw instead
 		self::failed();
@@ -56,7 +49,13 @@ class Daemon {
 			exit(1);
 		}
 	}
-	private function __construct() {
+
+	public function __construct() {
+		if (self::$instance) {
+			self::crash("Singletons only, please");
+		}
+		self::$instance = true;
+
 		// parse options
 		$this->pidfile = 'pid';
 		if ($_SERVER['argc'] < 2) {
