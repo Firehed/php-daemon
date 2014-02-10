@@ -4,7 +4,7 @@ namespace Firehed\ProcessControl;
 
 class Daemon {
 
-	private $pidfile;
+	private $pidfile = 'pid';
 	private $fh;
 	private $childPid;
 	private static $instance;
@@ -57,8 +57,15 @@ class Daemon {
 		self::$instance = true;
 
 		// parse options
-		$this->pidfile = 'pid';
 		$this->checkForDeclareDirective();
+	}
+
+	public function setPidFileLocation($path) {
+		if (!is_string($path)) {
+			throw new \InvalidArgumentException("Path must be a string");
+		}
+		$this->pidfile = $path;
+		return $this;
 	}
 
 	public function autoRun() {
