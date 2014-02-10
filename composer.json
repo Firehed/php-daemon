@@ -2,8 +2,8 @@
 , "description": "Turn a command-line script into a daemonized process"
 , "license": "MIT"
 , "autoload":
-	{ "psr-0":
-		{ "Firehed\\ProcessControl\\Daemon": "src/"
+	{ "psr-4":
+		{ "Firehed\\ProcessControl\\": "src/"
 		}
 	}
 , "require":
