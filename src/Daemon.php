@@ -35,12 +35,34 @@ class Daemon {
 		// echo $msg,"\n";
 	}
 
+	private $didTick = false;
+	public function didTick() {
+		$this->didTick = true;
+	}
+
+	private function checkForDeclareDirective() {
+		register_tick_function([$this, 'didTick']);
+		usleep(1);
+		if (!$this->didTick) {
+			// Try a bunch of no-ops in case the directive is set as > 1
+			$i = 1000;
+			while ($i--);
+		}
+		unregister_tick_function([$this, 'didTick']);
+		if (!$this->didTick) {
+			fwrite(STDERR, "It looks like `declare(ticks=1);` has not been "
+				."called, so signals to stop the daemon will fail. Ensure "
+				."that the root-level script calls this.\n");
+			exit(1);
+		}
+	}
 	private function __construct() {
 		// parse options
 		$this->pidfile = 'pid';
 		if ($_SERVER['argc'] < 2) {
 			self::showHelp();
 		}
+		$this->checkForDeclareDirective();
 		switch (strtolower($_SERVER['argv'][1])) {
 			case 'start':
 			case 'stop':
