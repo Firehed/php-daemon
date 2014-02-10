@@ -5,6 +5,8 @@ namespace Firehed\ProcessControl;
 class Daemon {
 
 	private $pidfile = 'pid';
+	private $logFile = 'log';
+	private $errFile = 'log.err';
 	private $fh;
 	private $childPid;
 	private static $instance;
@@ -131,8 +133,8 @@ class Daemon {
 		fclose(STDOUT);
 		fclose(STDERR);
 		$this->stdin  = fopen('/dev/null', 'r');
-		$this->stdout = fopen('log', 'a+');
-		$this->stderr = fopen('log.err', 'a+');
+		$this->stdout = fopen($this->logFile, 'a+');
+		$this->stderr = fopen($this->errFile, 'a+');
 		$this->debug("Reopened file descriptors");
 		$this->debug("Executing original script");
 		pcntl_signal(SIGTERM, function() { exit; });
