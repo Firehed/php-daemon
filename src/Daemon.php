@@ -58,10 +58,13 @@ class Daemon {
 
 		// parse options
 		$this->pidfile = 'pid';
+		$this->checkForDeclareDirective();
+	}
+
+	public function autoRun() {
 		if ($_SERVER['argc'] < 2) {
 			self::showHelp();
 		}
-		$this->checkForDeclareDirective();
 		switch (strtolower($_SERVER['argv'][1])) {
 			case 'start':
 			case 'stop':
