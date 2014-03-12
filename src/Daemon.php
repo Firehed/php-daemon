@@ -82,9 +82,25 @@ class Daemon {
 
 	public function setPidFileLocation($path) {
 		if (!is_string($path)) {
-			throw new \InvalidArgumentException("Path must be a string");
+			throw new \InvalidArgumentException("Pidfile path must be a string");
 		}
 		$this->pidfile = $path;
+		return $this;
+	}
+
+	public function setStdoutFileLocation($path) {
+		if (!is_string($path)) {
+			throw new \InvalidArgumentException("Stdout path must be a string");
+		}
+		$this->logFile = $path;
+		return $this;
+	}
+
+	public function setStderrFileLocation($path) {
+		if (!is_string($path)) {
+			throw new \InvalidArgumentException("Stderr path must be a string");
+		}
+		$this->errFile = $path;
 		return $this;
 	}
 
