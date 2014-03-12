@@ -59,6 +59,20 @@ class Daemon {
 		$this->checkForDeclareDirective();
 	}
 
+	public function setUser($systemUsername) {
+		$info = posix_getpwnam($systemUsername);
+		if (!$info) {
+			self::crash("User '$systemUsername' not found");
+		}
+		$uid = $info['uid'];
+		if (posix_setuid($uid)) {
+			return $this;
+		}
+		else {
+			self::crash("Could not change to $systemUsername ($uid). Try running this program as root.");
+		}
+	}
+
 	public function setPidFileLocation($path) {
 		if (!is_string($path)) {
 			throw new \InvalidArgumentException("Path must be a string");
