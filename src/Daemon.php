@@ -9,6 +9,7 @@ class Daemon {
 	private $pidfile = 'pid';
 	private $logFile = 'log';
 	private $errFile = 'log.err';
+	private $termLimit = 20;
 	private $fh;
 	private $childPid;
 	private $didTick = false;
@@ -107,6 +108,14 @@ class Daemon {
 		return $this;
 	}
 
+	public function setTerminateLimit($seconds) {
+		if (!is_int($seconds) || $seconds < 1) {
+			throw new InvalidArgumentException("Limit must be a positive int");
+		}
+		$this->termLimit = $seconds;
+		return $this;
+	}
+
 	public function autoRun() {
 		if ($_SERVER['argc'] < 2) {
 			self::showHelp();
@@ -194,7 +203,7 @@ class Daemon {
 		}
 		$i = 0;
 		while (posix_kill($pid, 0)) { // Wait until the child goes away
-			if (++$i >= 20) {
+			if (++$i >= $this->termLimit) {
 				self::crash("Process $pid did not terminate after $i seconds");
 			}
 			self::show('.');
