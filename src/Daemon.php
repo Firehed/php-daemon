@@ -74,14 +74,15 @@ class Daemon {
 		if ($_SERVER['argc'] < 2) {
 			self::showHelp();
 		}
-		switch (strtolower($_SERVER['argv'][1])) {
+		$cmd = strtolower(end($_SERVER['argv']));
+		switch ($cmd) {
 			case 'start':
 			case 'stop':
 			case 'restart':
 			case 'reload':
 			case 'status':
 			case 'kill':
-				call_user_func(array($this, $_SERVER['argv'][1]));
+				call_user_func(array($this, $cmd));
 			break;
 			default:
 				self::showHelp();
