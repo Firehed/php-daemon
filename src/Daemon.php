@@ -73,6 +73,13 @@ class Daemon {
 		}
 	}
 
+	public function setProcessName($name) {
+		if (function_exists('cli_set_process_title')) {
+			cli_set_process_title($name);
+		}
+		return $this;
+	}
+
 	public function setPidFileLocation($path) {
 		if (!is_string($path)) {
 			throw new \InvalidArgumentException("Path must be a string");
