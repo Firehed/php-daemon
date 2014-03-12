@@ -18,10 +18,7 @@ class Daemon {
 	}
 
 	private static function showHelp() {
-		$cmd = $_SERVER['_'];
-		if ($cmd != $_SERVER['PHP_SELF']) {
-			$cmd .= ' ' . $_SERVER['PHP_SELF'];
-		}
+		$cmd = $_SERVER['PHP_SELF'];
 		echo "Usage: $cmd {status|start|stop|restart|reload|kill}\n";
 		exit(0);
 	}
