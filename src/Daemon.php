@@ -2,6 +2,8 @@
 
 namespace Firehed\ProcessControl;
 
+use InvalidArgumentException;
+
 class Daemon {
 
 	private $pidfile = 'pid';
@@ -9,6 +11,7 @@ class Daemon {
 	private $errFile = 'log.err';
 	private $fh;
 	private $childPid;
+	private $didTick = false;
 	private static $instance;
 
 	private static function crash($msg) {
@@ -27,7 +30,6 @@ class Daemon {
 		// echo $msg,"\n";
 	}
 
-	private $didTick = false;
 	public function didTick() {
 		$this->didTick = true;
 	}
@@ -42,9 +44,9 @@ class Daemon {
 		}
 		unregister_tick_function([$this, 'didTick']);
 		if (!$this->didTick) {
-			fwrite(STDERR, "It looks like `declare(ticks=1);` has not been "
-				."called, so signals to stop the daemon will fail. Ensure "
-				."that the root-level script calls this.\n");
+			fwrite(STDERR, "It looks like `declare(ticks=1);` has not been ".
+				"called, so signals to stop the daemon will fail. Ensure ".
+				"that the root-level script calls this.\n");
 			exit(1);
 		}
 	}
@@ -69,7 +71,8 @@ class Daemon {
 			return $this;
 		}
 		else {
-			self::crash("Could not change to $systemUsername ($uid). Try running this program as root.");
+			self::crash("Could not change to $systemUsername ($uid).".
+				"Try running this program as root.");
 		}
 	}
 
@@ -82,7 +85,7 @@ class Daemon {
 
 	public function setPidFileLocation($path) {
 		if (!is_string($path)) {
-			throw new \InvalidArgumentException("Pidfile path must be a string");
+			throw new InvalidArgumentException("Pidfile path must be a string");
 		}
 		$this->pidfile = $path;
 		return $this;
@@ -90,7 +93,7 @@ class Daemon {
 
 	public function setStdoutFileLocation($path) {
 		if (!is_string($path)) {
-			throw new \InvalidArgumentException("Stdout path must be a string");
+			throw new InvalidArgumentException("Stdout path must be a string");
 		}
 		$this->logFile = $path;
 		return $this;
@@ -98,7 +101,7 @@ class Daemon {
 
 	public function setStderrFileLocation($path) {
 		if (!is_string($path)) {
-			throw new \InvalidArgumentException("Stderr path must be a string");
+			throw new InvalidArgumentException("Stderr path must be a string");
 		}
 		$this->errFile = $path;
 		return $this;
@@ -129,7 +132,8 @@ class Daemon {
 		// Open and lock PID file
 		$this->fh = fopen($this->pidfile, 'c+');
 		if (!flock($this->fh, LOCK_EX | LOCK_NB)) {
-			self::crash("Could not get pidfile lock, another process is probably running");
+			self::crash("Could not lock the pidfile. This daemon may already ".
+			   "be running.");
 		}
 
 		// Fork
@@ -158,7 +162,7 @@ class Daemon {
 
 		// detatch from terminal
 		if (posix_setsid() === -1) {
-			self::crash("Child process setsid() call failed, could not detach from terminal");
+			self::crash("Child process could not detach from terminal.");
 		}
 
 		self::ok();
@@ -213,6 +217,7 @@ class Daemon {
 		$this->stop(false);
 		$this->start();
 	}
+
 	private function reload() {
 		$pid = $this->getChildPid();
 		self::show("Sending SIGUSR1");
@@ -224,6 +229,7 @@ class Daemon {
 		}
 		exit;
 	}
+
 	private function status() {
 		$pid = $this->getChildPid();
 		if (!$pid) {
@@ -244,26 +250,32 @@ class Daemon {
 			exit(1);
 		}
 	}
-	function kill() {
+
+	private function kill() {
 		$this->terminate('Sending SIGKILL', SIGKILL);
 		exit;
 	}
+
 	private function getChildPid() {
-		return file_exists($this->pidfile) ? file_get_contents($this->pidfile) : false;
+		return file_exists($this->pidfile)
+			? file_get_contents($this->pidfile)
+			: false;
 	}
 
 	// make output pretty
 	private static $chars = 0;
-	static function show($text) {
+	private static function show($text) {
 		echo $text;
 		self::$chars += strlen($text);
 	}
-	static function ok() {
+
+	private static function ok() {
 		echo str_repeat(' ', 59-self::$chars);
 		echo "[\033[0;32m  OK  \033[0m]\n";
 		self::$chars = 0;
 	}
-	static function failed() {
+
+	private static function failed() {
 		echo str_repeat(' ', 59-self::$chars);
 		echo "[\033[0;31mFAILED\033[0m]\n";
 		self::$chars = 0;
