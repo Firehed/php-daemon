@@ -13,6 +13,8 @@ class Daemon {
 	private $fh;
 	private $childPid;
 	private $didTick = false;
+	private $userId = null;
+
 	private static $instance;
 
 	private static function crash($msg) {
@@ -67,14 +69,8 @@ class Daemon {
 		if (!$info) {
 			self::crash("User '$systemUsername' not found");
 		}
-		$uid = $info['uid'];
-		if (posix_setuid($uid)) {
-			return $this;
-		}
-		else {
-			self::crash("Could not change to $systemUsername ($uid).".
-				"Try running this program as root.");
-		}
+		$this->userId = $info['uid'];
+		return $this;
 	}
 
 	public function setProcessName($name) {
@@ -172,6 +168,12 @@ class Daemon {
 		// detatch from terminal
 		if (posix_setsid() === -1) {
 			self::crash("Child process could not detach from terminal.");
+		}
+		if (null !== $this->userId) {
+			if (!posix_setuid($this->userId)) {
+				self::crash("Could not change user. Try running this program".
+					" as root.");
+			}
 		}
 
 		self::ok();
